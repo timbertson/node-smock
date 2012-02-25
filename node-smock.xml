@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type='text/xsl' href='interface.xsl'?>
+<interface xmlns="http://zero-install.sourceforge.net/2004/injector/interface" uri="http://gfxmonk.net/dist/0install/node-smock.xml">
+	<name>node-smock</name>
+	<summary>straightforward JS mocking</summary>
+	<description>
+# Smock
+
+Is a straightforward mocking framework for nodejs and other commonJS-compliant runtimes.
+
+It's not got much documentation yet though.
+	</description>
+	<homepage>https://github.com/gfxmonk/node-smock/</homepage>
+	<rich-description xmlns="http://gfxmonk.net/dist/0install">
+		<div xmlns="http://www.w3.org/1999/xhtml">
+			<h1 id="smock">Smock</h1>
+			<p>Is a straightforward mocking framework for nodejs and other commonJS-compliant runtimes.</p>
+			<p>It's not got much documentation yet though.</p>
+		</div>
+	</rich-description>
+	<group>
+		<environment insert="" mode="prepend" name="NODE_PATH"/>
+		<implementation id="sha1new=9e9cc0e5f304c3b638ba6c2455f61fff6199b7b4" released="2012-02-25" version="0.1">
+			<manifest-digest sha256="9fb1d0556d6a86b9fefac1d097a33d7c8bace404c5bb683a06aef95cda7ac440"/>
+			<archive href="http://gfxmonk.net/dist/0install/node-smock/node-smock-0.1.tgz" size="3077"/>
+		</implementation>
+	</group>
+</interface>
