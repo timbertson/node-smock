@@ -68,19 +68,10 @@ var make_mock = function(name, template) {
 var replace = function(subject, method, obj) {
 	var previous, owner;
 	var owner = subject;
-	if(method in subject) {
-		var previous = subject[method];
-		while(!owner.hasOwnProperty(method)) {
-			owner = owner.__proto__; // todo: does this work cross-platform
-			if(owner == Object.prototype) {
-				throw new Error("can't determine owner of property: " + method);
-			}
-		};
-	} else {
-		previous = undefined;
-	}
-	get_bookkeeper().add_replacement([owner, method, obj]);
-	return obj;
+	previous = subject[method];
+	get_bookkeeper().add_replacement([subject, method, previous]);
+	subject[method] = obj;
+	return subject;
 };
 
 var expect_or_stub = function(subject, method, expect) {
@@ -208,11 +199,19 @@ Expectation.prototype.once = function() { return this.exactly(1); };
 Expectation.prototype.twice = function() { return this.exactly(2); };
 Expectation.prototype.thrice = function() { return this.exactly(3); };
 
+var arg_to_s = function(arg) {
+	return String(arg);
+};
+
 Expectation.prototype.with_args = function() {
 	var expected = Array.prototype.slice.call(arguments); // make a shallow copy
 	var self = this;
 	this._set('args', function() { return self._compare(expected, Array.prototype.slice.call(arguments)); });
-	this.args.desc = expected.join(", ");
+	var expected_descs = [];
+	for(var i=0; i<expected.length; i++) {
+		expected_descs[i] = arg_to_s(expected[i]);
+	}
+	this.args.desc = expected_descs.join(", ");
 	return this;
 };
 Expectation.prototype.where_args = function(f, ctx) {
@@ -291,7 +290,10 @@ Expectation.prototype.report = function() {
 	if(all_calls.length > 0) {
 		s += "\n\nAll calls were:";
 		for(var i=0; i < all_calls.length; i++) {
-			var call = all_calls[i];
+			var call = all_calls[i].slice();
+			for(var j=0; j<call.length; j++) {
+				call[j] = arg_to_s(call[j]);
+			}
 			s += "\n " + (i+1) + ") " + this.mock.__name + "(" + call.join(", ") + ")";
 		}
 		s += "\n";
@@ -316,8 +318,11 @@ exports.init = function() {
 };
 exports.finish = function() {
 	assert(_bookkeeper !== null, "finish() called before init()");
-	_bookkeeper.finish();
-	_bookkeeper = null;
+	try {
+		_bookkeeper.finish();
+	} finally {
+		_bookkeeper = null;
+	}
 };
 exports.is_mock = is_mock;
 exports.Expectation = Expectation;
