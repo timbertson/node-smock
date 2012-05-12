@@ -39,7 +39,7 @@ var make_mock = function(name, template) {
 				return response.invoke.apply(response, arguments);
 			}
 		}
-		throw new Error(mock + " received unexpected call(" + Array.prototype.slice.call(arguments).join(", ") + ")");
+		//throw new Error(mock + " received unexpected call(" + Array.prototype.slice.call(arguments).join(", ") + ")");
 	};
 	extend(mock, {
 		__mock_marker: mock_marker,
@@ -271,7 +271,7 @@ Expectation.prototype.invoke = function() {
 
 Expectation.prototype.verify = function() {
 	//console.log("verifying " + this.mock + " had " + (this.num_calls && this.num_calls.desc) + " calls with " + (this.args && this.args.desc) + ", from " + JSON.stringify(this.mock.__calls));
-	if(!this._is_set('num_calls')) return true; // no expectation, no worries!
+	if(!this._is_set('num_calls')) this.at_least(1).times;
 	if(!this.num_calls(this._matching_call_count())) {
 		throw new Error(this.report());
 	}
@@ -320,6 +320,7 @@ exports.finish = function() {
 	_bookkeeper = null;
 };
 exports.is_mock = is_mock;
+exports.Expectation = Expectation;
 
 exports.mocha_hooks = {
 	'test': exports.init,
