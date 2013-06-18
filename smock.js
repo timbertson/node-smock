@@ -2,6 +2,10 @@
 var mock_marker = {};
 var _bookkeeper = null;
 
+var assert = function(cond, msg) {
+	if(!cond) throw new Error(msg);
+}
+
 var is_mock = function(m) {
 	if(m === undefined) return false;
 	return m.__mock_marker == mock_marker;
@@ -330,4 +334,16 @@ exports.Expectation = Expectation;
 exports.mocha_hooks = {
 	'test': exports.init,
 	'test verify': exports.finish
+};
+
+exports.install = function(runner) {
+	if(runner.beforeEach && runner.afterEach) {
+		runner.beforeEach(exports.init);
+		runner.afterEach(exports.finish);
+	} else {
+		throw new Error("Smock doesn't know how to install itself into " + runner);
+	}
+	// useful as a method chain, e.g:
+	// var smock = require('smock').install(ctx);
+	return exports;
 };
